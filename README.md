@@ -1,2 +1,2 @@
 # k8s-oauth2-proxy
-How to deploy the a oauth2-proxy using docker and kubernetes
+Deploy [bitly/oauth2_proxy](https://github.com/bitly/oauth2_proxy) using docker and kubernetes
