@@ -1,0 +1,67 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: oauth2proxy
+  namespace: apps
+  labels:
+    app: oauth2proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oauth2proxy
+  template:
+    metadata:
+      labels:
+        app: oauth2proxy
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: oauth2proxy
+        image: microdc/oauth2-proxy:latest
+        imagePullPolicy: Always
+        args:
+          - "-email-domain=$(EMAIL_DOMAIN)"
+          - "-upstream=$(UPSTREAM)"
+          - "-cookie-secret=$(COOKIE_SECRET)"
+          - "-cookie-secure=true"
+          - "-provider=google"
+          - "-client-id=$(CLIENT_ID)"
+          - "-client-secret=$(CLIENT_SECRET)"
+          - "--http-address=0.0.0.0:4180"
+        envFrom:
+          - configMapRef:
+            name: oauth2-proxy-config
+        ports:
+        - containerPort: 4180
+          name: http
+          protocol: TCP
+        readinessProbe:
+          tcpSocket:
+            port: 4180
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 4180
+          initialDelaySeconds: 15
+          periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: oauth2proxy
+  name: oauth2proxy
+  namespace: apps
+spec:
+  ports:
+  - port: 80
+    name: http
+    protocol: TCP
+    targetPort: http
+  selector:
+    app: oauth2proxy
+
