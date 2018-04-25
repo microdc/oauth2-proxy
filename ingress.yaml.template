@@ -1,0 +1,16 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: oauth2proxy
+  namespace: apps
+spec:
+  rules:
+  - host: ${VHOST}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: oauth2proxy
+          servicePort: http
+
