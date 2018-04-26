@@ -1,4 +1,9 @@
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: apps
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -34,6 +39,8 @@ spec:
         envFrom:
           - configMapRef:
             name: oauth2-proxy-config
+          - secretRef:
+            name: oauth2-proxy-secret
         ports:
         - containerPort: 4180
           name: http
