@@ -12,22 +12,24 @@ kubectl apply -f k8s.yaml
 2. Create a config map for the oauth2_proxy config items
 ```
 cat > "oauth2_proxy_config" << EOF
-EMAIL_DOMAIN="mygmaildomain.com"
-UPSTREAM="http://kibana.instrumentation:5602/"
-CLIENT_ID="101010101010-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com"
+EMAIL_DOMAIN=equalexperts.com
+UPSTREAM=http://kibana.instrumentation:5602/
+CLIENT_ID=101010101010-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com
 EOF
 
 kubectl create configmap oauth2-proxy-config -n apps --from-env-file=oauth2_proxy_config
 ```
-3. Create secrets for oauth2_proxy
+3. Create secrets for oauth2_proxy. The 'Client Secret' provided in the
+GoogleAPIs interface should be used for both COOKIE_SECRET and CLIENT_SECRET
+below.
 ```
-cat > "oauth2-proxy-secret" << EOF
-COOKIE_SECRET="xxxxxxxxxxXxXXxxxxxxXxxxxxx"
-CLIENT_SECRET="000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com"
+cat > oauth2-proxy-secret << EOF
+COOKIE_SECRET=XXXXXXXXXXXXXXXXXXXXXXXXXXX
+CLIENT_SECRET=XXXXXXXXXXXXXXXXXXXXXXXXXXX
 EOF
 
 kubectl create secret generic oauth2-proxy-secret -n apps \
-                                                 --from-env-file=oauth2_proxy_secrets
+                                         --from-env-file=oauth2-proxy-secret
 ```
 
 ### Configure the Ingress (kubernetes nginx)
@@ -35,5 +37,3 @@ kubectl create secret generic oauth2-proxy-secret -n apps \
 export VHOST="oauth2_proxy.example.com"
 kubectl apply -f <(envsubst < ingress.yaml.template)
 ```
-
-
