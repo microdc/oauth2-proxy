@@ -71,4 +71,3 @@ spec:
     targetPort: http
   selector:
     app: oauth2proxy
-
